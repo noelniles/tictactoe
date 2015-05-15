@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<style>
+td {
+  border: 1px solid black;
+  height: 50px;
+  width: 50px;
+}
+</style>
+<body>
+<table id="game_board">
+
+  <tr>
+
+    <td id="1"></td>
+
+    <td id="2"></td>
+
+    <td id="3"></td>
+
+  </tr>
+
+  <tr>
+
+    <td id="4"></td>
+
+    <td id="5"></td>
+
+    <td id="6"></td>
+
+  </tr>
+
+  <tr>
+
+    <td id="7"></td>
+
+    <td id="8"></td>
+
+    <td id="9"></td>
+
+  </tr>
+
+</table>
+<form id="select_player">
+<h3>Select a player to begin</h3>
+<input type="radio" name="select_player" value="X">User Goes First<br>
+<input type="radio" name="select_player" value="O">Computer Goes First<br>
+</form>
+<div id="message"></div>
+
+<!-- Being Tic-Tac-Toe Script -->
+<script>
+
+// board[0] is the number of free spaces
+// board[10] is the result of the game |N|o result, |W|in, |D|raw
+var board = [9,'','','','','','','','','','N'];
+
+// Current player
+var player;
+
+// Stores a message for display to the user
+var msg = $('#message');
+
+// Clears the board and radio buttons on page load
+function refresh_board() {
+  $('#game_board td').html('');
+  $('#select_player input:radio').attr('disabled', false);
+}
+
+function game_over(board, player) {
+  
+  if (player = 'O' && board[10] == 'W'){
+    return true;
+  } else {
+
+    if (won){
+      msg.html(player + ' has wone');
+      return true;
+    } else if (tie){
+      msg.html('The game is tie');
+      return true;
+    } else {
+      return false;
+    }
+  }
+}
+  
+function won(board, player){
+var wins = [[1, 2, 3], [4, 5, 6], [7, 8, 9], 
+            [1, 4, 7], [2, 5, 8], [3, 6, 9], 
+            [9, 5, 1], [7, 5, 3]];
+var w1, w2, w3;
+var b1, b2, b3;
+
+  if(player == 'X' && board[10] == 'W'){
+    return true;
+  } else {
+    for (var i = 0; i <= 7; i++){
+      w1 = wins[i][0];
+      w2 = wins[i][1];
+      w3 = wins[i][2];
+
+      b1 = board[w1];
+      b2 = board[w2];
+      b3 = board[w3];
+
+      if (b1 == 'O' && b2 == 'O' && b3 == 'O'){
+        return true;
+      }
+    }    
+  }
+  return false;
+}
+
+function tie(board, player){
+  return (board[0] == 0) ? true : false;
+}
+
+function computer_move(board) {
+  
+  player = 'O';
+  // The functions called here must return true if the move is 
+  // a winning move for 'O', the computer, and false otherwise
+  // They must also return an integer from 1-9 which will be used
+  // to select the computers next move.
+  if (naive_computer()){
+    return true;    
+  } else {
+    return false;
+  }
+}
+function naive_computer(){
+  for (var i = 1; i < 10; i++){
+    if (board[i] != 'X' && board[i] != 'O') {
+      board[i] = '0';
+      var id = '#' + i;
+      return false;
+    }
+    return true;
+  } 
+}
+
+function user_move(board, player) {
+
+  player = 'X';
+  $('td').on('click', function(){
+    $(this).html("<h3>X</h3>");
+    board[0]--;
+    board[parseInt($(this).attr('id'))] = 'X';
+    game_over(board, player);
+  });
+}
+
+function play(board, player){
+
+  msg.html('<h3>' + player + " will go first</h3>");
+
+  // Disables radio buttons so first player can't be chosen twice
+  $('#select_player input:radio').attr('disabled', true);
+  
+  if (player == 'O'){
+    if (computer_move(board)){
+      board[0]--;
+    } else {
+      msg.html("<h3>The game failed :(</h3>");
+    }    
+    if ( ! game_over(board, player)) {
+      // Loop!
+      play(board, 'X');
+    }
+  } else if (player == 'X'){
+    msg.html('Your turn. Click on an empty square to mark it with an X');
+    user_move(board, player);
+  }
+}
+
+$('#select_player').on('click', function(){
+  player = $('input[name="select_player"]:checked', '#select_player').val();
+  play(board, player);
+});
+
+// Refreshes the table and radio buttons
+$(document).ready(refresh_board());
+</script>
+</body>
+</html>
