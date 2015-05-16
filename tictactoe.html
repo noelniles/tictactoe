@@ -75,11 +75,14 @@ function game_over(board, player) {
   if (player = 'O' && board[10] == 'W'){
     return true;
   } else {
+  
+    var w = won(board, player);
+    var t = tie(board, player);
 
-    if (won){
-      msg.html(player + ' has wone');
+    if (w){
+      msg.html(player + ' has won');
       return true;
-    } else if (tie){
+    } else if (t){
       msg.html('The game is tie');
       return true;
     } else {
@@ -89,15 +92,21 @@ function game_over(board, player) {
 }
   
 function won(board, player){
-var wins = [[1, 2, 3], [4, 5, 6], [7, 8, 9], 
-            [1, 4, 7], [2, 5, 8], [3, 6, 9], 
-            [9, 5, 1], [7, 5, 3]];
-var w1, w2, w3;
-var b1, b2, b3;
+  var wins = [[1, 2, 3], [4, 5, 6], [7, 8, 9], 
+              [1, 4, 7], [2, 5, 8], [3, 6, 9], 
+              [9, 5, 1], [7, 5, 3]];
 
-  if(player == 'X' && board[10] == 'W'){
+  // References individual elements in a winning set
+  var w1, w2, w3;
+
+  // References the square on the board to test agains wins
+  var b1, b2, b3;
+  
+  // If it's the computer's turn and 'W' is set then computer wins
+  if(player == 'O' && board[10] == 'W'){
     return true;
   } else {
+    // Checks if 'X' the user won
     for (var i = 0; i <= 7; i++){
       w1 = wins[i][0];
       w2 = wins[i][1];
@@ -107,7 +116,7 @@ var b1, b2, b3;
       b2 = board[w2];
       b3 = board[w3];
 
-      if (b1 == 'O' && b2 == 'O' && b3 == 'O'){
+      if (b1 == 'X' && b2 == 'X' && b3 == 'X'){
         return true;
       }
     }    
@@ -116,41 +125,53 @@ var b1, b2, b3;
 }
 
 function tie(board, player){
-  return (board[0] == 0) ? true : false;
+  if (board[0] == 0){
+    board[10] = 'D';
+    return true;
+  } else {
+    return false;
+  }
 }
 
 function computer_move(board) {
   
   player = 'O';
-  // The functions called here must return true if the move is 
-  // a winning move for 'O', the computer, and false otherwise
-  // They must also return an integer from 1-9 which will be used
-  // to select the computers next move.
+
   if (naive_computer()){
-    return true;    
+    if (! game_over(board, player)){
+
+      play(board, 'X');    
+    }
   } else {
-    return false;
-  }
+    return false
+  };
 }
+
 function naive_computer(){
   for (var i = 1; i < 10; i++){
     if (board[i] != 'X' && board[i] != 'O') {
       board[i] = '0';
       var id = '#' + i;
+      $(id).html('<h3>O</h3>');
+      return true;
+    } else {
       return false;
     }
-    return true;
   } 
 }
 
 function user_move(board, player) {
 
   player = 'X';
+
   $('td').on('click', function(){
-    $(this).html("<h3>X</h3>");
     board[0]--;
+    $(this).html("<h3>X</h3>");
     board[parseInt($(this).attr('id'))] = 'X';
-    game_over(board, player);
+
+    if (! game_over(board, player)){
+      play(board, 'O');  
+    }
   });
 }
 

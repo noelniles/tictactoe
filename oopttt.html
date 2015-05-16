@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<body>
+<div class="container">
+<div class="row">
+<div class="col-md-9">
+<h2>Tic-Tac-Toe</h2>
+<table class="table table-bordered" id="game_board" width="300px">
+
+  <tr height="200px">
+
+    <td id="1"></td>
+
+    <td id="2"></td>
+
+    <td id="3"></td>
+
+  </tr>
+
+  <tr height="200px">
+
+    <td id="4"></td>
+
+    <td id="5"></td>
+
+    <td id="6"></td>
+
+  </tr>
+
+  <tr height="200px">
+
+    <td id="7"></td>
+
+    <td id="8"></td>
+
+    <td id="9"></td>
+
+  </tr>
+
+</table>
+</div><!-- End col-md-9 -->
+
+<div class="col-md-3">
+  <form id="select_player">
+  <h3>Select a player to begin</h3>
+  <input type="radio" name="select_player" value="X">User Goes First<br>
+  <input type="radio" name="select_player" value="O">Computer Goes First<br>
+  </form>
+  <div id="message"></div>
+</div><!-- End col-md-3 -->
+
+</div><!-- End row -->
+</div><!-- End container -->
+<script>
+$(document).ready(function(){
+  $("input:radio[name=select_player]").attr('disabled', false);
+  $('td').html('');
+});
+
+$('input:radio[name=select_player]').click(function(){
+  $(this).attr('disabled', true);
+  game.player = $(this).val();
+  game.next_move();
+
+});
+game = {
+
+  player : '',
+
+  board : ['','','',
+           '','','',
+           '','',''],
+
+  free_spaces : 9,
+
+  outcome : '',
+
+  msg : $('#message'),
+
+  // Computer's move
+  omove : 
+    function(board){
+
+      for (var i = 0; i < this.board.length; i++){
+        if (this.board[i] == ''){
+          var id = '#' + i;
+          $(id).html('<h3>O</h3>');
+          board[i] = 'O';
+          break;
+        }
+      }
+      this.next_move();
+    },
+
+  // User's move
+  xmove : 
+    function(){
+      
+      $('td').on('click', function(){
+        var id = $(this).attr('id');
+        $(this).html('<h3>X</h3>');
+        this.board[id] = 'X';
+        this.next_move();
+      });
+    },
+
+  game_over : 
+    function(){
+
+      if (this.player == 'O' && this.outcome == 'W'){
+
+        return true;
+
+      } else {
+      
+        if (this.won(this.board, this.player)){
+            
+          msg.html(this.player + ' has won');
+          return true;
+
+        } else if (this.tie(this.board, this.player)){
+
+          this.msg.html('The game is tie');
+          return true;
+
+        } else {
+
+          return false;
+
+        }
+      }
+              
+    },
+
+  won :
+    function(){
+    
+      var wins = [[1, 2, 3], [4, 5, 6], [7, 8, 9], 
+                  [1, 4, 7], [2, 5, 8], [3, 6, 9], 
+                  [9, 5, 1], [7, 5, 3]];
+
+      // References individual elements in a winning set
+      var w1, w2, w3;
+
+      // References the square on the board to test against wins
+      var b1, b2, b3;
+      
+      // If it's O's turn and outcome is |W|in then O wins
+      if(this.player == 'O' && this.outcome == 'W'){
+
+        return true;
+
+      } else {
+
+        // Checks if 'X' has won
+        for (var i = 0; i <= 7; i++){
+
+          w1 = wins[i][0];
+          w2 = wins[i][1];
+          w3 = wins[i][2];
+
+          for (var j = 0; j < 9; j += 3){
+          
+            b1 = this.board[j];
+            b2 = this.board[j+1];
+            b3 = this.board[j+2];
+          }
+
+          if (b1 == 'X' && b2 == 'X' && b3 == 'X'){
+            return true;
+          }
+        }    
+      }
+      return false;
+    },
+
+  tie :
+    function(){
+      
+      if (this.free_spaces == 0){
+
+        this.outcome = 'D';
+        return true;
+
+      } else {
+
+        return false;
+      }
+    },
+
+  next_move : 
+    function(){
+        
+        if (this.player == 'X' && ! (this.game_over())){
+          
+          this.free_space--; 
+          this.omove(this.board);
+
+        } else if (this.player == 'O' && ! (this.game_over())) {
+
+          this.free_space--;
+          this.xmove(this.board);
+          
+        } else if (this.game_over() && this.outcome == 'W'){
+
+          this.msg.html('<p>' + this.player + ' has won</p>');
+
+        } else if (this.game_over() && this.outcome == 'D'){
+
+          this.msg.html('<p>game is a tie</p>');
+
+        } else {
+        
+          this.msg.html('<p>There is a problem with the game. Blame Noel.</p>');
+        }
+      }
+};
+</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+</body>
+</html>
