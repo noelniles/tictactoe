@@ -125,7 +125,7 @@ game = {
         this.current_board();
         return true;
       } else {
-        this.msg("I don't know what that is");
+        this.msg("I don't know what that is" + '<br>board index ' + bi + '<br>identifier ' + id + '<br>player ' + player);
       }
     },
 
@@ -137,6 +137,7 @@ game = {
       } else {
         this.random_move();
       }
+      return (this.game_over()) ? false : true;
     },
   
   // User's move
@@ -156,10 +157,10 @@ game = {
 
   game_over :
     function(){
-
+    var p = (this.player == 'X') ? 'O' : 'X';
       if (this.won()){
 
-        this.outcome_msg(this.player + ' has won');
+        this.outcome_msg(p + ' has won');
         return true;
 
       } else if (this.tie()){
@@ -262,21 +263,21 @@ game = {
         var b3 = that.board[ws[2]];
 
         if(b1 == '' && b2 == 'O' && b3 == 'O'){
-          var id = '#' + b1.toString();
-          if (this.allowed(b1, id, 'O')){
-            this.outcome = 'W';
+          var id = '#' + ws[0].toString();
+          if (that.allowed(ws[0], id, 'O')){
+            that.outcome = 'W';
             return true;
           }
         } else if (b1 == 'O' && b2 == '' && b3 == 'O'){
-          var id = '#' + b2.toString();
-          if (this.allowed(b2, id, 'O')){
-            this.outcome = 'W';
+          var id = '#' + ws[1].toString();
+          if (that.allowed(ws[1], id, 'O')){
+            that.outcome = 'W';
             return true;
           }
         } else if (b1 == 'O' && b2 == 'O' && b3 == ''){
-            var id = '#' + b3.toString();
-            if (this.allowed(b3, id, '0')){
-              this.outcome = 'W';
+            var id = '#' + ws[2].toString();
+            if (that.allowed(ws[2], id, '0')){
+              that.outcome = 'W';
               return true;
             }
         } else return false;
